@@ -8,6 +8,7 @@ server.use(routes);
 
 const projects = [];
 server.post("/projects", (req, res) => {
+  
   return res.json(req.body);
 })
 
