@@ -9,15 +9,15 @@ server.use(routes);
 const projects = [];
 
 server.use((req, res, next)=>{
-  console.log(`Requisição`);
-  next();
+  console.count(`Requisição Método ${req.method} URL: ${req.url}`);
+  return next();
 })
 
-function checkExists(req, res, next){
-  project = projects.find(project => project.id = req.params.id);
+function checkProjectsExists(req, res, next){
+  const project = projects.find(p => p.id == req.params.id);
 
   if(!project){
-    return res.status(400).json({ error: "Id is required"})
+    return res.status(400).json({ error: "Project not found"})
   }
 
   return next();
@@ -35,7 +35,7 @@ server.get('/projects', (req, res)=>{
 })
 
 
-server.put('/projects/:id', checkExists, (req, res)=>{
+server.put('/projects/:id', checkProjectsExists, (req, res)=>{
 
   const result = projects.filter(project => {
     if(project.id == req.params.id){
@@ -47,21 +47,20 @@ server.put('/projects/:id', checkExists, (req, res)=>{
   return res.json(result);
 });
 
-server.delete('/projects/:id', checkExists, (req, res) =>{
+server.delete('/projects/:id', checkProjectsExists, (req, res) =>{
 
   const result = projects.filter(project => project.id == req.params.id);
   projects.splice(result.id, 1);
   return res.send();
 });
 
-server.post('/projects/:id/tasks', checkExists, (req, res) => {
+server.post('/projects/:id/tasks', checkProjectsExists, (req, res) => {
 
   const project = projects.find(project =>  project.id == req.params.id);
 
   project.tasks.push(req.body.title);
 
-  return res.json(projects);
-
+  return res.json(project);
 })
 
 server.listen(3333);
